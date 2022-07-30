@@ -1,6 +1,7 @@
 package io.github.ilyaskerbal.plugins
 
 import io.github.ilyaskerbal.routes.rootRoute
+import io.github.ilyaskerbal.routes.unauthorizedRoute
 import io.ktor.server.routing.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -11,5 +12,6 @@ fun Application.configureRouting() {
 
     routing {
         rootRoute()
+        unauthorizedRoute()
     }
 }

@@ -1,10 +1,7 @@
 package io.github.ilyaskerbal.plugins
 
 import io.github.ilyaskerbal.domain.repository.UserDataSource
-import io.github.ilyaskerbal.routes.authorizedRoute
-import io.github.ilyaskerbal.routes.rootRoute
-import io.github.ilyaskerbal.routes.tokenVerificationRoute
-import io.github.ilyaskerbal.routes.unauthorizedRoute
+import io.github.ilyaskerbal.routes.*
 import io.ktor.server.routing.*
 import io.ktor.server.application.*
 import org.koin.ktor.ext.inject
@@ -20,5 +17,6 @@ fun Application.configureRouting() {
         rootRoute()
         unauthorizedRoute()
         tokenVerificationRoute(userDataSource)
+        getUserInfoRoute(userDataSource)
     }
 }

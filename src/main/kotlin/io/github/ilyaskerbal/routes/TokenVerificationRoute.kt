@@ -4,12 +4,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
-import io.github.ilyaskerbal.domain.model.ApiRequest
-import io.github.ilyaskerbal.domain.model.EndPoint
-import io.github.ilyaskerbal.domain.model.User
-import io.github.ilyaskerbal.domain.model.UserSession
+import io.github.ilyaskerbal.domain.model.*
 import io.github.ilyaskerbal.domain.repository.UserDataSource
 import io.github.ilyaskerbal.utils.Constants
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -63,7 +61,13 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.saveUserToDatabase(
     println(saveResponse)
     if (saveResponse) {
         call.sessions.set(UserSession(id = sub, name, email = email))
-        call.respondRedirect(EndPoint.Authorized.path)
+        call.respond(
+            message = ApiResponse(
+                success = true,
+                user = userDataSource.getUserInfo(email)?.copy(_id = null)
+            ),
+            status = HttpStatusCode.OK
+        )
     } else {
         call.respondRedirect(EndPoint.Unauthorized.path)
     }

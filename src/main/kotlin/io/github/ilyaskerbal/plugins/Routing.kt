@@ -20,5 +20,6 @@ fun Application.configureRouting() {
         getUserInfoRoute(userDataSource)
         updateUserRoute(userDataSource)
         deleteUserRoute(userDataSource)
+        signOutRoute()
     }
 }

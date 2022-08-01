@@ -10,7 +10,7 @@ import org.litote.kmongo.reactivestreams.KMongo
 
 val koinModule = module {
 
-    single<CoroutineDatabase>{
+    single {
         KMongo
             .createClient()
             .coroutine

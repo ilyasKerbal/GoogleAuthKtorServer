@@ -12,12 +12,12 @@ class UserDataSourceImpl(
 
     private val users = database.getCollection<User>()
 
-    override suspend fun getUserInfo(userId: String): User? {
-        return users.findOne(User::id eq userId)
+    override suspend fun getUserInfo(email: String): User? {
+        return users.findOne(User::email eq email)
     }
 
     override suspend fun saveUserInfo(user: User): Boolean {
-        val userExits = users.findOne(filter = User::id eq user.id)
+        val userExits = getUserInfo(user.email)
         return if (userExits == null) {
             users.save(document = user)?.wasAcknowledged() ?: false
         } else {
@@ -26,16 +26,16 @@ class UserDataSourceImpl(
         }
     }
 
-    override suspend fun deleteUser(userId: String): Boolean {
-        return users.deleteOne(User::id eq userId).wasAcknowledged()
+    override suspend fun deleteUser(email: String): Boolean {
+        return users.deleteOne(User::email eq email).wasAcknowledged()
     }
 
     override suspend fun updateUserInfo(
-        userId: String,
+        userEmail: String,
         firstName: String,
         lastName: String): Boolean {
         return users.updateOne(
-            filter = User::id eq userId,
+            filter = User::email eq userEmail,
             update = setValue(
                 property = User::name,
                 value = "$firstName $lastName"

@@ -6,15 +6,20 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import io.github.ilyaskerbal.domain.model.ApiRequest
 import io.github.ilyaskerbal.domain.model.EndPoint
+import io.github.ilyaskerbal.domain.model.User
 import io.github.ilyaskerbal.domain.model.UserSession
+import io.github.ilyaskerbal.domain.repository.UserDataSource
 import io.github.ilyaskerbal.utils.Constants
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import io.ktor.util.pipeline.*
 
-fun Route.tokenVerificationRoute() {
+fun Route.tokenVerificationRoute(
+    userDataSource: UserDataSource
+) {
     route(EndPoint.TokenVerification.path) {
         post {
             val request = try {
@@ -26,10 +31,10 @@ fun Route.tokenVerificationRoute() {
             if (!request.tokenId.isBlank()) {
                 val verifiedToken = verifyTokenId(request.tokenId)
                 if (verifiedToken != null) {
-                    val name = verifiedToken.payload["name"].toString()
-                    val email = verifiedToken.payload["email"].toString()
-                    call.sessions.set(UserSession(id = "12", "Elyas Eagle"))
-                    call.respondRedirect(EndPoint.Authorized.path)
+                    saveUserToDatabase(
+                        verifiedToken = verifiedToken,
+                        userDataSource = userDataSource
+                    )
                 } else {
                     call.respondRedirect(EndPoint.Unauthorized.path)
                 }
@@ -38,6 +43,31 @@ fun Route.tokenVerificationRoute() {
             }
         }
     }
+}
+
+private suspend fun PipelineContext<Unit, ApplicationCall>.saveUserToDatabase(
+    verifiedToken: GoogleIdToken,
+    userDataSource: UserDataSource
+) {
+    val sub = verifiedToken.payload["sub"].toString()
+    val name = verifiedToken.payload["name"].toString()
+    val email = verifiedToken.payload["email"].toString()
+    val picture = verifiedToken.payload["picture"].toString()
+    val newUser = User(
+        googleId = sub,
+        name = name,
+        email = email,
+        profilePhoto = picture
+    )
+    val saveResponse = userDataSource.saveUserInfo(newUser)
+    println(saveResponse)
+    if (saveResponse) {
+        call.sessions.set(UserSession(id = sub, name, email = email))
+        call.respondRedirect(EndPoint.Authorized.path)
+    } else {
+        call.respondRedirect(EndPoint.Unauthorized.path)
+    }
+
 }
 
 fun verifyTokenId(tokenId: String): GoogleIdToken? {

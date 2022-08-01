@@ -19,5 +19,6 @@ fun Application.configureRouting() {
         tokenVerificationRoute(userDataSource)
         getUserInfoRoute(userDataSource)
         updateUserRoute(userDataSource)
+        deleteUserRoute(userDataSource)
     }
 }

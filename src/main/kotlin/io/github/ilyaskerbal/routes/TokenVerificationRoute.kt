@@ -60,11 +60,12 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.saveUserToDatabase(
     val saveResponse = userDataSource.saveUserInfo(newUser)
     println(saveResponse)
     if (saveResponse) {
-        call.sessions.set(UserSession(id = sub, name, email = email))
+        call.sessions.set(UserSession(id = sub, name =  name, email = email))
         call.respond(
             message = ApiResponse(
                 success = true,
-                user = userDataSource.getUserInfo(email)?.copy(_id = null)
+                user = userDataSource.getUserInfo(email)?.copy(_id = null),
+                message = "Sign in operation successful"
             ),
             status = HttpStatusCode.OK
         )

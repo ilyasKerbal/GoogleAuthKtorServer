@@ -56,13 +56,16 @@ fun Route.updateUserRoute(
                             call.respond(
                                 message = ApiResponse(
                                     success = true,
-                                    user = userDataSource.getUserInfo(userSession.email)?.copy(_id = null)
+                                    user = userDataSource.getUserInfo(userSession.email)?.copy(_id = null),
+                                    message = "Update successful"
                                 )
                             )
                         } else {
                             call.respond(
                                 message = ApiResponse(
-                                    success = false
+                                    success = false,
+                                    user = null,
+                                    message = "Unable to update"
                                 ),
                                 status = HttpStatusCode.BadRequest
                             )

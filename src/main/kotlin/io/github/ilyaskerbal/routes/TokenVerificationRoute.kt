@@ -65,7 +65,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.saveUserToDatabase(
             message = ApiResponse(
                 success = true,
                 user = userDataSource.getUserInfo(email)?.copy(_id = null),
-                message = "Sign in operation successful"
+                message = "Sign in successful"
             ),
             status = HttpStatusCode.OK
         )

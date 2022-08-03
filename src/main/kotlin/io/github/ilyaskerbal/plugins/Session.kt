@@ -12,7 +12,7 @@ fun Application.configureSession() {
         val secretAuthKey = hex("adab13358046f3cde6782a2b1f56355d")
         cookie<UserSession>(
             name = "USER_SESSION",
-            storage = directorySessionStorage(rootDir = File(".sessions"))
+            storage = directorySessionStorage(rootDir = File(".sessions"), cached = false)
         ) {
             //TODO: cookie.secure = true
             transform(SessionTransportTransformerEncrypt(secretEncryptKey, secretAuthKey))
